@@ -9,6 +9,8 @@ const MongoStore = require ('connect-mongo');
 const flash= require('connect-flash');
 const passport =require('passport');
 
+const cors = require ('cors')
+
 // const MONGO_ATLAS=require('./database')
 //Inicializations
 const app = express();
@@ -36,8 +38,11 @@ app.set('view engine', '.hbs');
 //Middlewares
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 app.use(express.json());
 app.use(methodOverride('_method'))
+
+
 
 app.use(session({
   

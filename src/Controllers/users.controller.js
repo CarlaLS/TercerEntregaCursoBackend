@@ -1,10 +1,10 @@
 
 const multer = require ('multer');
-const multerConfig = require ('../../public/utils/multerConfig')
+const multerConfig = require ('../../utils/multerConfig')
 const passport= require('passport')
 const User = require('../models/User')
 
-const upload = multer (multerConfig).single('image');
+const upload = multer(multerConfig).single('image');
 
 const usersController = {};
 
@@ -27,7 +27,8 @@ usersController.renderSingUpForm = (req, res) => {
 
 usersController.signup = async (req, res) => {
     const errors =[];
-    const {name, address, age, phone, image, email, password, confirmPassword } = req.body;
+    const {name, address, age, phone, email, password, confirmPassword } = req.body;
+    const image = req.file
     if(password != confirmPassword){
         errors.push ({text: 'Las contraseñas no coinciden'})
        
@@ -53,11 +54,12 @@ usersController.signup = async (req, res) => {
             req.flash('mensaje_error', 'El email ya está registrado');
             res.redirect('/users/signup');
         } else {
-            const newUser =new User ({name, address, age, phone, image, email, password});
+            const newUser =new User ({name, age, address, email, image, password});
+            
             newUser.password = await newUser.encryptPassword(password)
             if (req.file && req.file.filename ) {
                 newUser.image = req.file.filename
-            }
+            
             await newUser.save();
             req.flash('mensaje_satisfactorio', `Bienvenido/a ${name}`)
             res.redirect('/users/signin');
@@ -65,6 +67,14 @@ usersController.signup = async (req, res) => {
     }
     
 };
+
+}
+
+usersController.singup = async (req, res) => {
+    const users= await User.find();
+    res.render('productos/profile', {users})
+    
+  };
 
 
 usersController.renderSignInForm = (req, res) => {
