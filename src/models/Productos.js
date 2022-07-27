@@ -13,10 +13,20 @@ const productSchema=new Schema({
         required:true
 
     },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+
     price:{
         type:Number,
         required:true
 
+    },
+
+    image:{
+    type:String
     },
   
 
@@ -24,4 +34,9 @@ const productSchema=new Schema({
 
 
 })
+
+// productSchema.methods.toJSON = function() {
+//     const { __v, estado, ...data  } = this.toObject();
+//     return data;
+// }
 module.exports = model('Productos', productSchema)

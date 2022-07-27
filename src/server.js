@@ -8,14 +8,17 @@ const morgan = require('morgan');
 const MongoStore = require ('connect-mongo');
 const flash= require('connect-flash');
 const passport =require('passport');
-
 const cors = require ('cors')
+const MONGO_ATLAS = process.env.MONGO_ATLAS
+const SECRET = process.env.SECRET
+const fileUpload = require('express-fileupload');
 
-// const MONGO_ATLAS=require('./database')
+
+
 //Inicializations
 const app = express();
 require('./config/passport')
-
+// const logger = require('../logger/logger')
 
 //Settings
 app.set('views', path.join(__dirname, 'views'))
@@ -42,13 +45,18 @@ app.use(cors());
 app.use(express.json());
 app.use(methodOverride('_method'))
 
+app.use(fileUpload({
+  useTempFiles : true,
+  tempFileDir : '/tmp/',
+  createParentPath: true
+}));
 
 
 app.use(session({
   
   
-  store: MongoStore.create({ mongoUrl: 'mongodb+srv://Carla:carla@cluster0.sktlunu.mongodb.net/myprimerdb?retryWrites=true&w=majority'}),
-  secret: 'shhhhhhhhhhhhhhhhhhhhh',
+  store: MongoStore.create({ mongoUrl: MONGO_ATLAS}),
+  secret: SECRET,
   resave: true,
   saveUninitialized: true,
   cookie: {
@@ -80,11 +88,13 @@ app.use((req, res, next)=> {
 //Routes
 app.use(require('./routes/index.routes'));
 app.use(require('./routes/productos.routes'));
-app.use(require('./routes/usuarios.routes'))
+app.use(require('./routes/usuarios.routes'));
+app.use(require('./routes/carrito.routes'));
+app.use(require('./routes/orden.routes'));
+app.use (require('./routes/uploads.routes'))
 
 //Static Files
 app.use(express.static(path.join(__dirname,'public')));
-// app.use(express.static(path.join(__dirname,'upload')));
 
 
 

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 
-const MONGO_ATLAS = 'mongodb+srv://Carla:carla@cluster0.sktlunu.mongodb.net/myprimerdb?retryWrites=true&w=majority'
+const MONGO_ATLAS = process.env.MONGO_ATLAS
 
 mongoose.connect(MONGO_ATLAS, {
     useUnifiedTopology: true,

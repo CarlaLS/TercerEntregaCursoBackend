@@ -1,22 +1,10 @@
 
-const multer = require ('multer');
-const multerConfig = require ('../../utils/multerConfig')
+
 const passport= require('passport')
 const User = require('../models/User')
 
-const upload = multer(multerConfig).single('image');
 
 const usersController = {};
-
-usersController.fileUpload = (req, res, next) => {
-    upload (req, res, function (error) {
-        if (error ) {
-            res.json ({message: error});
-        }
-        return next();
-    })
-}
-
 
 
 usersController.renderSingUpForm = (req, res) => {
@@ -27,8 +15,10 @@ usersController.renderSingUpForm = (req, res) => {
 
 usersController.signup = async (req, res) => {
     const errors =[];
-    const {name, address, age, phone, email, password, confirmPassword } = req.body;
-    const image = req.file
+    const {name, address, age, phone, email, image, password, confirmPassword } = req.body;
+ 
+ 
+
     if(password != confirmPassword){
         errors.push ({text: 'Las contraseñas no coinciden'})
        
@@ -54,16 +44,16 @@ usersController.signup = async (req, res) => {
             req.flash('mensaje_error', 'El email ya está registrado');
             res.redirect('/users/signup');
         } else {
-            const newUser =new User ({name, age, address, email, image, password});
+            const newUser =new User ({name, age, address, email, password});
             
             newUser.password = await newUser.encryptPassword(password)
-            if (req.file && req.file.filename ) {
-                newUser.image = req.file.filename
+            if (req.file && req.file.archivo ) {
+                newUser.image = req.file.archivo
+            }
             
             await newUser.save();
             req.flash('mensaje_satisfactorio', `Bienvenido/a ${name}`)
             res.redirect('/users/signin');
-        }
     }
     
 };
@@ -87,17 +77,6 @@ usersController.signin = passport.authenticate('local', {
     failureFlash: true
 })
 
-usersController.profile = async (req, res) => {
-    const {name, address, age, phone, image, email} = req.body;
-    const profileUser =new profileUser ({name, address, age, phone, image, email});
-
-    if (req.file && req.file.filename ) {
-        profileUser.image = req.file.filename
-    }
-     await profileUser.save();
-    res.render ('users/profile')
-
-}
 
 usersController.logout =async (req, res )=> {
     
